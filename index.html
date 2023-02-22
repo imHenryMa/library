@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="script" defer></script>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <header class="header">
+        Library App
+    </header>
+    <main>
+        <div class="book-container">
+            <ul class="complete">
+                <li>
+                    <div class="title label">Title:</div>
+                    <div class="title content">Title of book</div>
+                </li>
+                <li>
+                    <div class="author label">Author:</div>
+                    <div class="author content">Author of book</div>
+                </li>
+                <li>
+                    <div class="pageCount label">Number of pages:</div>
+                    <div class="pageCount content">PageCount</div>
+                </li>
+                <li>
+                    <button class="hasRead">Has Read</button>
+                </li>
+                <li>
+                    <button class="remove">Remove</button>
+                </li>
+            </ul>
+        </div>
+        <div class="book-container">
+            <form>
+                <ul class="incomplete">
+                    <li>
+                        <label for="title">Title:</label>
+                        <input type="text" id="title" name="title">
+                    </li>
+                    <li>
+                        <label for="author">Author:</label>
+                        <input type="text" id="author" name="author">
+                    </li>
+                    <li>
+                        <label for="pages">Number of pages:</label>
+                        <input type="number" id="pages" name="pages">
+                    </li>
+                    <li>
+                        <label for="hasRead">Have you read it?</label>
+                        <input type="checkbox" id="hasRead" name="hasRead">
+                    </li>
+                    <li>
+                        <button type="submit" value="Submit">Submit</button>
+                    </li>
+                </ul>
+            </form>
+        </div>
+
+        <div class="book-container">
+            <ul class="empty">
+                <li>Add Book</li>
+                <li class="plus">+</li>
+            </ul>
+        </div>
+
+    </main>
+    <footer>
+        Created by:imHenryMa
+    </footer>
+</body>
+</html>
