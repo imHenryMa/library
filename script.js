@@ -9,9 +9,12 @@ TODO:
 
  o Read from the array of books and then display on page
 
- - Have a button to add a new book
+ - Hook up the 'Add book' button
 
- - Have a form that sends information to a book struct -> refresh the page
+ - Have the 'New Book' form hide when a book isn't being added, and show up when added
+ - Have the 'New Book' form function properly
+
+ o Hook up the 'Has Read' and the 'Remove' buttons per book
 
 */
 
@@ -30,7 +33,31 @@ Book.prototype.info = function(){
     console.log(`${this.title} is written by ${this.author} and has ${this.pages} pages. ${hasRead ? 'You have read this!' : 'You have not read this!'}`);
 }
 
-/* Factory method to produce a book DOM element on the page */
+//Books are stored within the 'shelf' parent node
+const shelf = document.querySelector('.shelf');
+
+//In memory they are stored in the 'books' array
+let books = [];
+
+//Function for populating the shelf with all books from the book array
+function addBooks(booksArray, shelf){
+    booksArray.reduce((arrayIndex,book)=>{
+
+        //Generating a unique identifier for each book in the shelf
+        let uniqueID = Date.now();
+        book.uniqueID = uniqueID;
+
+        //Pause for at least 1 millisecond so no two uniqueIDs are the same
+        while(Date.now() - uniqueID < 1);
+
+        //Add the book, then increase array iteration
+        bookToDOM(shelf,booksArray[arrayIndex],uniqueID);
+        console.log(`Book index: ${arrayIndex} added!`);
+        return arrayIndex+1;
+    },0);
+}
+
+/* Function to produce a book DOM element on the page */
 function bookToDOM(shelf,bookData,uniqueID){
     /* Creates a book DOM element with the following HTML structure*/
     /*        
@@ -75,8 +102,22 @@ function bookToDOM(shelf,bookData,uniqueID){
     addListItem(list, newBook,'pageCount','Number of pages:',bookData.pages);
 
     //Adding the two buttons.
-    addButton(list,'hasRead','Has Read');
-    addButton(list, 'remove', 'Remove');
+    let readButton = addButton(list,'hasRead','Has Read');
+    readButton.setAttribute('data-hasread',bookData.hasRead);
+    readButton.textContent = bookData.hasRead ? 'Has read' : 'Has not read';
+    let removeButton = addButton(list, 'remove', 'Remove');
+
+    removeButton.addEventListener('click', ()=>{
+        console.log(`${uniqueID} remove button was clicked`);
+        removeBook(uniqueID);
+    });
+
+    readButton.addEventListener('click',() =>{
+        console.log(`${uniqueID} read status was clicked`);
+        let newStatus = toggleHasRead(uniqueID);
+        readButton.setAttribute('data-hasread',newStatus);
+        readButton.textContent = newStatus ? 'Has read' : 'Has not read';
+    });
 
     function addListItem(list, book, className, title, content){
         let listItem = document.createElement('li');
@@ -101,39 +142,78 @@ function bookToDOM(shelf,bookData,uniqueID){
         button.classList.add(className);
         button.textContent=content;
         listItem.appendChild(button);
+
+        return button;
     }
-}
-//Function for populating the page with books from the book array
-function addBooks(booksArray, shelf){
-    booksArray.reduce((arrayIndex,book)=>{
-        bookToDOM(shelf,booksArray[arrayIndex],arrayIndex);
-        console.log(`Book index: ${arrayIndex} added!`);
-        return arrayIndex+1;
-    },0);
 }
 
 //Function to remove a book from page
 function removeBook(uniqueID){
 
     //First removes it from the array
-    books = books.filter((book, index) => {
-        return index != uniqueID;
+    books = books.filter((book) => {
+        return book.uniqueID != uniqueID;
     });
 
     //Then removes it from the DOM;
     let bookContainer = document.querySelector(`.book-container[data-index='${uniqueID}']`);
     bookContainer.remove();
-
 };
 
-/*-----------------------------------------
-Actual logic for the page below
---------------------------------*/
-const shelf = document.querySelector('.shelf');
+//Function to change the 'hasRead' status of a book
+function toggleHasRead(uniqueID){
 
+    //Finds the current book in question
+    let index = books.findIndex((book) => {
+        return book.uniqueID == uniqueID;
+    });
 
+    
+    //Toggles the status in the array
+    books[index].hasRead = !(books[index].hasRead);
 
+    //Returns the new status
+    return books[index].hasRead;
+}
 
+/* Methods for the 'Add Book' button below */
+addBookButton = document.querySelector('.add-book');
+form = document.querySelector('.book-form');
+
+//When the button is clicked, hide the button and show the form
+addBookButton.addEventListener('click',() =>{
+    addBookButton.classList.add('form-shown');
+    form.classList.add('form-shown');
+});
+
+//When the submit button is clicked add the book, and then revert the 'Add Book' button to what it was
+submitButton = document.querySelector('button[type="submit"]');
+submitButton.addEventListener('click',(event) => {
+    if(form.checkValidity()){
+        event.preventDefault();
+        //Add the book to the array
+        let newBook = new Book(title.value,author.value,pages.value,hasRead.checked);
+        newBook.uniqueID = Date.now();
+        books.push(newBook);
+        bookToDOM(shelf,newBook, newBook.uniqueID);
+
+        //Clear the form
+        addBookButton.classList.remove('form-shown');
+        form.classList.remove('form-shown');
+        title.value = "";
+        author.value = "";
+        pages.value = "";
+        hasRead.checked = false;
+    }
+});
+
+//Cancel button resets the form and hides everything
+cancelButton = document.querySelector('button[type="reset"]');
+cancelButton.addEventListener('click',(event) => {
+        //Resets form status
+        addBookButton.classList.remove('form-shown');
+        form.classList.remove('form-shown');
+});
 
 
 /*---------------------------
@@ -144,7 +224,6 @@ const book1 = new Book('A Game of Thrones','George R.R. Martin',694,true);
 const book2 = new Book('B','B',22,false);
 const book3 = new Book('C','C',33,false);
 /* Test Array */
-let books = [];
 books.push(book1);
 books.push(book2);
 books.push(book3);
