@@ -22,6 +22,8 @@ TODO:
 Book methods and struct below
 --------------------------------------*/
 
+/*
+
 function Book(title, author, pages, hasRead){
     this.title = title;
     this.author = author;
@@ -32,6 +34,23 @@ function Book(title, author, pages, hasRead){
 Book.prototype.info = function(){
     console.log(`${this.title} is written by ${this.author} and has ${this.pages} pages. ${hasRead ? 'You have read this!' : 'You have not read this!'}`);
 }
+
+*/
+
+class Book{
+    constructor(title, author, pages, hasRead){
+        this.title = title;
+        this.author = author;
+        this.pages = pages;
+        this.hasRead = hasRead;
+    }
+
+    info = () =>{
+        console.log(`${this.title} is written by ${this.author} and has ${this.pages} pages. ${hasRead ? 'You have read this!' : 'You have not read this!'}`);
+    }
+}
+
+
 
 //Books are stored within the 'shelf' parent node
 const shelf = document.querySelector('.shelf');
